@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+  labels:
+    app: moodle
+    role: moodle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moodle
+      role: moodle
+      tier: frontend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: moodle
+        tier: frontend
+        role: moodle
+    spec:
+      containers:
+        - name: moodle
+          image: lucastercas/moodle:v3.7.6
+          imagePullPolicy: Always
+          env:
+            - name: DB_HOST
+              value: moodle-pgsql
+            - name: DB_USER
+              value: postgres
+            - name: DB_DRIVER
+              value: pgsql
+            - name: DB_PASSWORD
+              value: db_password
+            - name: MOODLE_ADMIN_PASSWORD
+              value: admin_pass
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+            - name: moodledata
+              mountPath: /var/www/moodledata
+      volumes:
+        - name: moodledata
+          persistentVolumeClaim:
+            claimName: moodledata-volume-claim

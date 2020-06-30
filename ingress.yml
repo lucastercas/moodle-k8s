@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: moodle-ingress
+spec:
+  rules:
+    - host: moodle.lucastercas.xyz
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: moodle
+              servicePort: 80
+    # - host: promkube.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         backend:
+    #           serviceName: prometheus
+    #           servicePort: 80
+    # - host: grafkube.com
+    #   http:
+    #     paths:
+    #       - path: /
+    #         backend:
+    #           serviceName: grafana
+    #           servicePort: 80

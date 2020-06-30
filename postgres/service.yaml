@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: moodle-pgsql
+  labels:
+    app: moodle
+    role: pgsql
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '5432'
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: moodle
+    role: pgsql
+    tier: backend
+  ports:
+    - name: pgsql
+      port: 5432
+      targetPort: 5432
+      protocol: TCP

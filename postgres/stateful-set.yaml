@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: moodle-pgsql
+  labels:
+    app: moodle
+    role: pgsql
+spec:
+  serviceName: pgsql
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: moodle
+      role: pgsql
+      tier: backend
+  template:
+    metadata:
+      name: pgsql
+      labels:
+        app: moodle
+        role: pgsql
+        tier: backend
+    spec:
+      containers:
+        - name: pgsql
+          image: postgres:13-alpine
+          ports:
+            - name: pgsql
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            limits:
+              memory: 2Gi
+              cpu: 1000m
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          volumeMounts:
+            - name: postgres-db-storage
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_DB
+              value: moodle
+            - name: POSTGRES_PASSWORD
+              value:  db_password
+      volumes:
+        - name: postgres-db-storage
+          persistentVolumeClaim:
+              claimName: postgres-pvc

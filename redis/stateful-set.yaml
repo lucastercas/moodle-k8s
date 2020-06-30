@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: moodle-redis
+  labels:
+    app: moodle
+    role: redis
+spec:
+  serviceName: redis
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: moodle
+      role: redis
+      tier: backend
+  template:
+    metadata:
+      name: redis
+      labels:
+        app: moodle
+        role: redis
+        tier: backend
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.0.5
+          resources:
+            limits:
+              memory: 1Gi
+              cpu: 1000m
+            requests:
+              cpu: 500m
+              memory: 510Mi
+          ports:
+            - containerPort: 6379
+              name: redis
+              protocol: TCP
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName:  "standard"
+        resources:
+          requests:
+            storage: 2Gi
+
